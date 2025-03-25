@@ -9,6 +9,11 @@
             "name": "ArchAngel776"
         }
     ],
+    "autoload": {
+        "files": [
+            "autoload.php"
+        ]
+    },
     "require": {
         "php": ">=8.0.30"
     }
