@@ -6,7 +6,7 @@ use ArchAngel776\OracleQueryBuilder\Components\Where;
 use ArchAngel776\OracleQueryBuilder\Components\Param;
 
 
-final class Updates extends TestCase
+final class UpdateTest extends TestCase
 {
     public function testComplexUpdateQuery(): void
     {
