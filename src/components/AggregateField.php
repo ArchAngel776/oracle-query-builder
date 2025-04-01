@@ -83,7 +83,7 @@ class AggregateField extends Field
         $additionalPart = ($this->additionalExpression !== null && $this->additionalExpression !== '')
             ? ' ' . $this->additionalExpression
             : '';
-        $query = "{$this->aggregationFunction}({$distinctPart}{$this->name}{$additionalPart})";
+        $query = "{$this->aggregationFunction}({$distinctPart}{$this->name}){$additionalPart}";
         if ($this->alias !== null && $this->alias !== '') {
             $query .= " AS {$this->alias}";
         }
