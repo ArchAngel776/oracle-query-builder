@@ -75,6 +75,22 @@ final class UpdateTest extends TestCase
         $this->assertCount(1, $params);
         $this->assertEquals([100, Param::INTEGER], $params[0]);
     }
+
+    public function testUpdateWithNullValue(): void
+    {
+        // Test update query when a column is set to null.
+        $update = new Update();
+        $update->table("users")
+               ->set("name", null)
+               ->where("id", "=", Param::make(1, Param::INTEGER));
+
+        $expectedQuery = "UPDATE users SET name = NULL WHERE id = ?";
+        $this->assertEquals($expectedQuery, $update->buildQuery());
+
+        $params = $update->getParams();
+        $this->assertCount(1, $params);
+        $this->assertEquals([1, Param::INTEGER], $params[0]);
+    }
 }
 
 ?>

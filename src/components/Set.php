@@ -42,12 +42,10 @@ class Set implements QueryBuilder {
      * The resulting SQL fragment is in the form:
      *    {field} = {value}
      *
-     * If $value is an instance of Param, the method calls createParam($value)
-     * and uses a placeholder "?" in the query.
-     * If $value is not an array and not an instance of Param, then:
-     *   - If it's a string, it is wrapped in single quotes.
-     *   - Otherwise, the raw value is used.
-     * If $value is an array, a RuntimeException is thrown.
+     * If $value is null, it outputs "NULL".
+     * If $value is an instance of Param, the method calls createParam($value) and outputs a "?" placeholder.
+     * If $value is not an array and is a string, it is enclosed in single quotes with proper escaping.
+     * Otherwise, the value is cast to string.
      *
      * @return string The built SET clause fragment.
      * @throws RuntimeException if $value is an array.
@@ -58,17 +56,19 @@ class Set implements QueryBuilder {
             throw new RuntimeException("Set clause value cannot be an array.");
         }
         
+        if ($this->value === null) {
+            return $this->field . " = NULL";
+        }
+        
         if ($this->value instanceof Param) {
             $this->createParam($this->value);
             return $this->field . " = ?";
         }
         
         if (is_string($this->value)) {
-            // Wrap string literal in single quotes and escape it.
             return $this->field . " = '" . addslashes($this->value) . "'";
         }
         
-        // For numeric or other types, cast to string.
         return $this->field . " = " . $this->value;
     }
 }
