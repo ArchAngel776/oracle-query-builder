@@ -71,18 +71,6 @@ class Set implements QueryBuilder {
         // For numeric or other types, cast to string.
         return $this->field . " = " . $this->value;
     }
-
-    /**
-     * Gets the parameters for the SET clause.
-     *
-     * Returns the parameters that have been added via the createParam() method.
-     *
-     * @return array<array{0:string, 1:int}> A numeric list of parameters.
-     */
-    public function getParams(): array
-    {
-        return $this->params;
-    }
 }
 
 ?>
