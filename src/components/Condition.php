@@ -83,6 +83,17 @@ class Condition implements QueryBuilder {
      */
     public function buildQuery(): string
     {
+        // First, handle null value.
+        if ($this->value === null) {
+            if ($this->operator === '=') {
+                return "{$this->field} IS NULL";
+            } elseif ($this->operator === '!=') {
+                return "{$this->field} IS NOT NULL";
+            } else {
+                throw new RuntimeException("Operator {$this->operator} is not allowed with null value.");
+            }
+        }
+        
         $allowedOperators = ['=', '<', '>', '<=', '>=', '!=', 'LIKE', 'BETWEEN', 'IN'];
         if (!in_array($this->operator, $allowedOperators, true)) {
             throw new RuntimeException("Invalid operator: {$this->operator}");

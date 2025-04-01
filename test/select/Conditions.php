@@ -151,6 +151,62 @@ final class Conditions extends TestCase
         $this->assertEquals([18, Param::INTEGER], $params[0]);
         $this->assertEquals([65, Param::INTEGER], $params[1]);
     }
+
+    public function testWhereNullEquals(): void
+    {
+        // Test condition with null value using '=' operator.
+        $select = new Select();
+        $select->select("id")
+               ->from("users")
+               ->where("deleted_at", "=", null);
+        
+        $expectedQuery = "SELECT id FROM users WHERE deleted_at IS NULL";
+        $this->assertEquals($expectedQuery, $select->buildQuery());
+    }
+
+    public function testWhereNullNotEquals(): void
+    {
+        // Test condition with null value using '!=' operator.
+        $select = new Select();
+        $select->select("id")
+               ->from("users")
+               ->where("deleted_at", "!=", null);
+        
+        $expectedQuery = "SELECT id FROM users WHERE deleted_at IS NOT NULL";
+        $this->assertEquals($expectedQuery, $select->buildQuery());
+    }
+
+    public function testWhereNullInvalidOperator(): void
+    {
+        // Using a null value with an operator other than '=' or '!=' should throw an exception.
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage("Operator < is not allowed with null value.");
+        
+        $select = new Select();
+        $select->select("id")
+               ->from("users")
+               ->where("deleted_at", "<", null);
+        
+        // This call should trigger the exception.
+        $select->buildQuery();
+    }
+
+    public function testMixedConditionsWithNullAndParam(): void
+    {
+        // Build a query combining a condition with a null value and a parameterized condition.
+        $select = new Select();
+        $select->select("id")
+               ->from("users")
+               ->where("deleted_at", "=", null)
+               ->andWhere("active", "=", Param::make(1, Param::INTEGER));
+        
+        $expectedQuery = "SELECT id FROM users WHERE deleted_at IS NULL AND active = ?";
+        $this->assertEquals($expectedQuery, $select->buildQuery());
+        
+        $params = $select->getParams();
+        $this->assertCount(1, $params);
+        $this->assertEquals([1, Param::INTEGER], $params[0]);
+    }
 }
 
 ?>
