@@ -24,6 +24,13 @@ class Select implements QueryBuilder
     use Conditionals;
 
     /**
+     * Parent Select statement of current one.
+     *
+     * @var Select|null
+     */
+    protected ?Select $parent;
+
+    /**
      * Array of Field or AggregateField objects for the SELECT statement.
      *
      * @var Field[]
@@ -106,14 +113,17 @@ class Select implements QueryBuilder
      *
      * @var Select|null
      */
-    protected ?Select $unitedAfter;
+    protected ?Select $unitedWith;
 
 
     /**
      * Constructor.
+     * 
+     * @param Select|null $parent [Optional]
      */
-    public function __construct()
+    public function __construct(?Select $parent = null)
     {
+        $this->parent = $parent;
         $this->fields = [];
         $this->distinct = false;
         $this->source = '';
@@ -125,7 +135,7 @@ class Select implements QueryBuilder
         $this->orderBy = [];
         $this->limit = null;
         $this->offset = null;
-        $this->unitedAfter  = null;
+        $this->unitedWith  = null;
     }
 
     /**
@@ -671,8 +681,8 @@ class Select implements QueryBuilder
      */
     public function union(): Select
     {
-        $this->unitedAfter = new Select();
-        return $this->unitedAfter;
+        $this->unitedWith = new Select($this);
+        return $this->unitedWith;
     }
 
     /**
@@ -766,9 +776,9 @@ class Select implements QueryBuilder
             $query .= " OFFSET {$offset} ROWS FETCH NEXT {$this->limit} ROWS ONLY";
         }
         
-        // 10. Append UNION clause if $unitedAfter is set.
-        if ($this->unitedAfter !== null) {
-            $query .= " UNION " . $this->unitedAfter->buildQuery();
+        // 10. Append UNION clause if $unitedWith is set.
+        if ($this->unitedWith !== null) {
+            $query .= " UNION " . $this->unitedWith->buildQuery();
         }
         
         return $query;
@@ -815,11 +825,21 @@ class Select implements QueryBuilder
         }
 
         // Append parameters from $unitedAfter, if set.
-        if ($this->unitedAfter !== null) {
-            $params = array_merge($params, $this->unitedAfter->getParams());
+        if ($this->unitedWith !== null) {
+            $params = array_merge($params, $this->unitedWith->getParams());
         }
 
         return $params;
+    }
+
+    /**
+     * Fetch a root element of Select statement.
+     * 
+     * @return Select
+     */
+    public function getRoot(): Select
+    {
+        return is_null($this->parent) ? $this : $this->parent->getRoot();
     }
 }
 
