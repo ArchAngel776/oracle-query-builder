@@ -77,6 +77,9 @@ class Batch implements QueryBuilder {
             if (is_array($value)) {
                 throw new RuntimeException("Value for field '$field' cannot be an array.");
             }
+            else if ($value instanceof Param) {
+                $this->createParam($value);
+            }
             $orderedValues[] = $value;
         }
         $this->values[] = $orderedValues;
@@ -128,7 +131,6 @@ class Batch implements QueryBuilder {
                 if ($value === null) {
                     $valueStrs[] = "NULL";
                 } elseif ($value instanceof Param) {
-                    $this->createParam($value);
                     $valueStrs[] = "?";
                 } elseif (is_string($value)) {
                     $valueStrs[] = "'" . addslashes($value) . "'";

@@ -54,6 +54,12 @@ class Condition implements QueryBuilder {
         $this->field = $field;
         $this->operator = $operator;
         $this->value = $value;
+
+        if ($this->value instanceof Param)
+        {
+            $this->createParam($this->value);
+        }
+
         $this->not = $not;
     }
 
@@ -108,7 +114,6 @@ class Condition implements QueryBuilder {
                 if (is_array($val)) {
                     throw new RuntimeException("Operator {$this->operator} does not support array value.");
                 }
-                $this->createParam($this->value);
                 $placeholder = "?";
             } elseif ($this->operator === 'BETWEEN') {
                 if (!is_array($val) || count($val) !== 2) {
@@ -117,8 +122,6 @@ class Condition implements QueryBuilder {
                 if (!is_numeric($val[0]) || !is_numeric($val[1])) {
                     throw new RuntimeException("BETWEEN operator requires numeric values.");
                 }
-                // Pass the entire array as a parameter.
-                $this->createParam($this->value);
                 $placeholder = "? AND ?";
             } elseif ($this->operator === 'IN') {
                 if (!is_array($val)) {
@@ -130,7 +133,6 @@ class Condition implements QueryBuilder {
                 // Create a placeholder string with as many question marks as elements in the array.
                 $num = count($val);
                 $placeholders = "(" . implode(", ", array_fill(0, $num, "?")) . ")";
-                $this->createParam($this->value);
                 $placeholder = $placeholders;
             }
         } else {

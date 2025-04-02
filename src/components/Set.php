@@ -34,6 +34,11 @@ class Set implements QueryBuilder {
     {
         $this->field = $field;
         $this->value = $value;
+
+        if ($this->value instanceof Param)
+        {
+            $this->createParam($this->value);
+        }
     }
 
     /**
@@ -61,7 +66,6 @@ class Set implements QueryBuilder {
         }
         
         if ($this->value instanceof Param) {
-            $this->createParam($this->value);
             return $this->field . " = ?";
         }
         
