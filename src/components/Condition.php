@@ -5,8 +5,8 @@ namespace ArchAngel776\OracleQueryBuilder\Components;
 use RuntimeException;
 use ArchAngel776\OracleQueryBuilder\Data\QueryBuilder;
 use ArchAngel776\OracleQueryBuilder\Components\Param;
+use ArchAngel776\OracleQueryBuilder\Statements\Select;
 use ArchAngel776\OracleQueryBuilder\Helpers\Parametrized;
-
 
 
 class Condition implements QueryBuilder {
@@ -58,6 +58,14 @@ class Condition implements QueryBuilder {
         if ($this->value instanceof Param)
         {
             $this->createParam($this->value);
+        }
+        else if (is_callable($value))
+        {
+            $result = $value(new Select());
+            if (!$result instanceof Select) {
+                throw new RuntimeException('Callback must return an instance of Select.');
+            }
+            $this->value = $result;
         }
 
         $this->not = $not;
@@ -134,6 +142,11 @@ class Condition implements QueryBuilder {
                 $num = count($val);
                 $placeholders = "(" . implode(", ", array_fill(0, $num, "?")) . ")";
                 $placeholder = $placeholders;
+            }
+        } else if ($this->value instanceof Select) {
+            $val = $this->value;
+            if ($this->operator === 'IN') {
+                $placeholder = $val->buildQuery();
             }
         } else {
             // Raw value branch.
