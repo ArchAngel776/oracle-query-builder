@@ -1,6 +1,6 @@
 {
     "name": "archangel776/oracle-query-builder",
-    "version": "1.2.1",
+    "version": "1.2.2",
     "description": "Standalone SQL Query Builder dedicated for Oracle Database.",
     "type": "library",
     "license": "MIT",

@@ -727,7 +727,7 @@ class Select implements QueryBuilder
         // 3. FROM clause.
         $query .= " FROM ";
         if ($this->source instanceof Select) {
-            $query .= "(" . $this->source->buildQuery() . ")";
+            $query .= "(" . $this->source->getRoot()->buildQuery() . ")";
         } else {
             $query .= $this->source;
         }
@@ -805,7 +805,7 @@ class Select implements QueryBuilder
 
         // Source.
         if ($this->source instanceof QueryBuilder) {
-            $params = array_merge($params, $this->source->getParams());
+            $params = array_merge($params, $this->source->getRoot()->getParams());
         }
         // If source is a string, no parameters are added.
 

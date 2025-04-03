@@ -148,7 +148,7 @@ class Condition implements QueryBuilder {
         } else if ($this->value instanceof Select) {
             $val = $this->value;
             if ($this->operator === 'IN') {
-                $placeholder = $val->buildQuery();
+                $placeholder = "(" . $val->buildQuery() . ")";
             }
         } else {
             // Raw value branch.
