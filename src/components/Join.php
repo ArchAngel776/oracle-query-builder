@@ -83,7 +83,7 @@ class Join implements QueryBuilder {
             if (!$resultSelect instanceof Select) {
                 throw new RuntimeException("Table callback must return an instance of Select.");
             }
-            $tablePart = "(" . $resultSelect->buildQuery() . ")";
+            $tablePart = "(" . $resultSelect->getRoot()->buildQuery() . ")";
         } else {
             // Instead of throwing an exception, we cast the value to string.
             $tablePart = (string)$this->table;
@@ -114,7 +114,7 @@ class Join implements QueryBuilder {
             if (!$resultSelect instanceof Select) {
                 throw new RuntimeException("Table callback must return an instance of Select.");
             }
-            $params = array_merge($params, $resultSelect->getParams());
+            $params = array_merge($params, $resultSelect->getRoot()->getParams());
         }
         if ($this->on !== null) {
             $params = array_merge($params, $this->on->getParams());

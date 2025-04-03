@@ -10,7 +10,9 @@ use ArchAngel776\OracleQueryBuilder\Helpers\Parametrized;
 
 
 class Condition implements QueryBuilder {
-    use Parametrized;
+    use Parametrized {
+        Parametrized::getParams as getInternalParams;
+    }
 
     /**
      * The field name for the condition.
@@ -65,7 +67,7 @@ class Condition implements QueryBuilder {
             if (!$result instanceof Select) {
                 throw new RuntimeException('Callback must return an instance of Select.');
             }
-            $this->value = $result;
+            $this->value = $result->getRoot();
         }
 
         $this->not = $not;
@@ -213,6 +215,27 @@ class Condition implements QueryBuilder {
                 ? "NOT {$this->field} {$this->operator} {$placeholder}"
                 : "{$this->field} {$this->operator} {$placeholder}";
         }
+    }
+
+    /**
+     * Gets the parameters for a single Condition.
+     *
+     * If $value is a Param, calls its internal getParams() method.
+     * When $value was called and bound as Select, call its getParams() method.
+     * Otherwise, returns empty array.
+     *
+     * @return array<array{0:string, 1:int}> A numeric list of parameters.
+     * @throws RuntimeException if the table callback does not return an instance of Select.
+     */
+    public function getParams(): array
+    {
+        if ($this->value instanceof Param) {
+            return $this->getInternalParams();
+        }
+        else if ($this->value instanceof Select) {
+            return $this->value->getParams();
+        }
+        return [];
     }
 }
 
