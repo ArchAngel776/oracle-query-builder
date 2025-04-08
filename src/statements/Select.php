@@ -677,11 +677,11 @@ class Select implements QueryBuilder
      * This method creates a new Select instance, passing the current object as the unitedWith parameter,
      * and returns the new instance.
      *
-     * @return Select
+     * @return static
      */
-    public function union(): Select
+    public function union(): static
     {
-        $this->unitedWith = new Select($this);
+        $this->unitedWith = new static($this);
         return $this->unitedWith;
     }
 
