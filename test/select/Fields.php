@@ -14,7 +14,7 @@ final class Fields extends TestCase
                ->as("ID", "FullName", "EmailAddress")
                ->from("users");
 
-        $expected = "SELECT id AS ID, name AS FullName, email AS EmailAddress FROM users";
+        $expected = "SELECT id AS \"ID\", name AS \"FullName\", email AS \"EmailAddress\" FROM users";
         $this->assertEquals($expected, $select->buildQuery());
 
         // No parameters expected from plain fields.
@@ -118,7 +118,7 @@ final class Fields extends TestCase
                ->else("Unknown", false);
         $select->from("customers");
 
-        $expected = "SELECT id AS ID, name AS Name, COUNT(DISTINCT orders), CASE WHEN score >= ? THEN High WHEN score < ? THEN Low ELSE Unknown END FROM customers";
+        $expected = "SELECT id AS \"ID\", name AS \"Name\", COUNT(DISTINCT orders), CASE WHEN score >= ? THEN High WHEN score < ? THEN Low ELSE Unknown END FROM customers";
         $this->assertEquals($expected, $select->buildQuery());
 
         // Expect parameters from the two where conditions in the CASE.

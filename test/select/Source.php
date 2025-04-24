@@ -44,9 +44,7 @@ final class Source extends TestCase
                 ->from("payments")
             , "p")->on("u.id", "p.user_id");
         
-        $expected = "SELECT * FROM users u "
-                  . "INNER JOIN orders o ON u.id = o.user_id "
-                  . "LEFT JOIN (SELECT payment_id FROM payments) p ON u.id = p.user_id";
+        $expected = "SELECT * FROM users u INNER JOIN orders o ON u.id = o.user_id LEFT JOIN (SELECT payment_id FROM payments) p ON u.id = p.user_id";
         $this->assertEquals($expected, $select->buildQuery());
     }
 

@@ -128,7 +128,7 @@ class CaseField extends Field {
         }
         $query .= " END";
         if ($this->alias !== null && $this->alias !== '') {
-            $query .= " AS {$this->alias}";
+            $query .= " AS \"{$this->alias}\"";
         }
         return $query;
     }

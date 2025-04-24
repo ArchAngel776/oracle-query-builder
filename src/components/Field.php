@@ -53,7 +53,7 @@ class Field implements QueryBuilder {
     public function buildQuery(): string
     {
         if ($this->alias !== null && $this->alias !== '') {
-            return "{$this->name} AS {$this->alias}";
+            return "{$this->name} AS \"{$this->alias}\"";
         }
         return $this->name;
     }
